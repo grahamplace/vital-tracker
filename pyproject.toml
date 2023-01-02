@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "vital-tracker"
+version = "0.1.0"
+description = ""
+authors = ["Graham Place <grahamgplace@gmail.com>"]
+readme = "README.md"
+packages = [{include = "vital_tracker"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+strenum = "^0.4.9"
+requests = "^2.28.1"
+selenium = "^4.7.2"
+webdriver-manager = "^3.8.5"
+pygsheets = "^2.0.6"
+black = "^22.12.0"
+flake8 = "^6.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

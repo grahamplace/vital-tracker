@@ -1,0 +1,6 @@
+credentials.json
+.idea/
+.DS_Store
+venv/
+config.toml
+__pycache__
