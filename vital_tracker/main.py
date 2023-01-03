@@ -1,30 +1,35 @@
 from datetime import datetime
 from enum import auto
-from selenium.webdriver.common.by import By
+import requests
 from strenum import StrEnum
 import pygsheets
 import time
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as ChromiumService
-from webdriver_manager.chrome import ChromeDriverManager
-from webdriver_manager.core.utils import ChromeType
 
-WAIT = 60 * 10 # 10 minutes
+
+WAIT = 10
 
 
 class GymEnum(StrEnum):
     BROOKLYN = auto()
 
 
+SAFE_SPACE_CODES = {
+    GymEnum.BROOKLYN: "a7796f34",
+}
+
+
 def build_url(gym_identifier: GymEnum) -> str:
-    return f"https://www.vitalclimbinggym.com/{gym_identifier}".lower()
+    return f"https://display.safespace.io/value/live/{SAFE_SPACE_CODES.get(gym_identifier)}"
 
 
-def fetch_current(
-    driver, gym_identifier: GymEnum
-) -> int:
-    driver.get(build_url(gym_identifier))
-    return int(driver.find_element(By.ID, "currocc").text)
+def fetch_current(gym_identifier: GymEnum) -> int:
+    resp = requests.get(build_url(gym_identifier))
+    if resp.status_code != 200:
+        raise Exception(
+            f"Failed to fetch current occupancy for {gym_identifier.value}: {resp.status_code} {resp.text}"
+        )
+
+    return int(resp.json())
 
 
 def write_to_sheet(gym_identifier: GymEnum, curr_occ: int):
@@ -43,18 +48,10 @@ def write_to_sheet(gym_identifier: GymEnum, curr_occ: int):
 
 
 def run():
-    opts = webdriver.ChromeOptions()
-    opts.add_argument("--headless")
-    driver = webdriver.Chrome(
-        service=ChromiumService(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()),
-        options=opts,
-    )
-
     gym = GymEnum.BROOKLYN
-    curr = fetch_current(driver, gym)
+    curr = fetch_current(gym)
     print(gym, curr)
     write_to_sheet(gym, curr)
-    driver.quit()
 
 
 if __name__ == "__main__":
