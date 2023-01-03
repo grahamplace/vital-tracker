@@ -7,5 +7,6 @@ services:
      buildCommand: "./build.sh"
      startCommand: "poetry run vital-tracker"
      autoDeploy: true
+     schedule: "*/10 * * * *"
      envVars:
        - fromGroup: vital-tracker
