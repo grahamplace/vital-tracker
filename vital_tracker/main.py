@@ -1,13 +1,13 @@
 from datetime import datetime
 from enum import auto
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
 from strenum import StrEnum
-from webdriver_manager.chrome import ChromeDriverManager
 import pygsheets
-import selenium.webdriver.chrome.webdriver
 import time
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service as ChromiumService
+from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.core.utils import ChromeType
 
 WAIT = 60 * 10 # 10 minutes
 
@@ -21,7 +21,7 @@ def build_url(gym_identifier: GymEnum) -> str:
 
 
 def fetch_current(
-    driver: selenium.webdriver.chrome.webdriver.WebDriver, gym_identifier: GymEnum
+    driver, gym_identifier: GymEnum
 ) -> int:
     driver.get(build_url(gym_identifier))
     return int(driver.find_element(By.ID, "currocc").text)
@@ -43,23 +43,20 @@ def write_to_sheet(gym_identifier: GymEnum, curr_occ: int):
 
 
 def run():
-    chromedriver = webdriver.Chrome(
-        service=ChromeService(ChromeDriverManager().install())
-    )
+    driver = webdriver.Chrome(service=ChromiumService(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()))
+
     gym = GymEnum.BROOKLYN
-    curr = fetch_current(chromedriver, gym)
+    curr = fetch_current(driver, gym)
     print(gym, curr)
     write_to_sheet(gym, curr)
-    chromedriver.quit()
+    driver.quit()
 
 
 if __name__ == "__main__":
-    chromedriver = webdriver.Chrome(
-        service=ChromeService(ChromeDriverManager().install())
-    )
+    driver = webdriver.Chrome(service=ChromiumService(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()))
     while True:
         gym = GymEnum.BROOKLYN
-        curr = fetch_current(chromedriver, gym)
+        curr = fetch_current(driver, gym)
         print(gym, curr)
         write_to_sheet(gym, curr)
         time.sleep(WAIT)
