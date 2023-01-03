@@ -43,7 +43,12 @@ def write_to_sheet(gym_identifier: GymEnum, curr_occ: int):
 
 
 def run():
-    driver = webdriver.Chrome(service=ChromiumService(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()))
+    opts = webdriver.ChromeOptions()
+    opts.add_argument("--headless")
+    driver = webdriver.Chrome(
+        service=ChromiumService(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()),
+        options=opts,
+    )
 
     gym = GymEnum.BROOKLYN
     curr = fetch_current(driver, gym)
@@ -53,10 +58,6 @@ def run():
 
 
 if __name__ == "__main__":
-    driver = webdriver.Chrome(service=ChromiumService(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()))
     while True:
-        gym = GymEnum.BROOKLYN
-        curr = fetch_current(driver, gym)
-        print(gym, curr)
-        write_to_sheet(gym, curr)
+        run()
         time.sleep(WAIT)
