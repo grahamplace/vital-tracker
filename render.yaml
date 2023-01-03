@@ -1,6 +1,6 @@
 services:
    - type: cron
-     name: genmoji-api
+     name: vital-tracker-cron
      region: ohio
      env: python
      plan: starter
