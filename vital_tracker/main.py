@@ -28,7 +28,7 @@ def fetch_current(
 
 
 def write_to_sheet(gym_identifier: GymEnum, curr_occ: int):
-    gc = pygsheets.authorize(service_file="../credentials.json")
+    gc = pygsheets.authorize(service_file="credentials.json")
     sh = gc.open("Vital Tracker")
     wks = sh[0]
     wks.insert_rows(
@@ -40,6 +40,17 @@ def write_to_sheet(gym_identifier: GymEnum, curr_occ: int):
         ],
         inherit=True,
     )
+
+
+def run():
+    chromedriver = webdriver.Chrome(
+        service=ChromeService(ChromeDriverManager().install())
+    )
+    gym = GymEnum.BROOKLYN
+    curr = fetch_current(chromedriver, gym)
+    print(gym, curr)
+    write_to_sheet(gym, curr)
+    chromedriver.quit()
 
 
 if __name__ == "__main__":

@@ -1,0 +1,11 @@
+services:
+   - type: cron
+     name: genmoji-api
+     region: ohio
+     env: python
+     plan: starter
+     buildCommand: "./build.sh"
+     startCommand: "poetry run vital-tracker"
+     autoDeploy: true
+     envVars:
+       - fromGroup: vital-tracker
